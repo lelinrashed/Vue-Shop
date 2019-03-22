@@ -4,10 +4,12 @@ import Home from './views/Home.vue'
 import Admin from './views/Admin.vue'
 import Overview from './views/Overview.vue'
 import Products from './views/Products.vue'
+import Orders from './views/Order.vue'
+import {fb} from './firebase'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
@@ -17,10 +19,11 @@ export default new Router({
       component: Home
     },
     {
-      path: '/admin/',
+      path: '/admin',
       name: 'admin',
       component: Admin,
-      children:[
+      meta: { requiresAuth: true },
+      children: [
         {
           path: 'overview',
           name: 'overview',
@@ -30,8 +33,30 @@ export default new Router({
           path: 'products',
           name: 'products',
           component: Products
+        },
+        {
+          path: 'orders',
+          name: 'orders',
+          component: Orders
         }
       ]
     }
   ]
+});
+
+router.beforeEach((to, from, next) => {
+  
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const currentUser = fb.auth().currentUser
+
+  if (requiresAuth && !currentUser) {
+    next('/')
+  } else if (requiresAuth && currentUser) {
+    next()
+  } else {
+    next()
+  }
+
 })
+
+export default router;

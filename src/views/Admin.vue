@@ -61,15 +61,15 @@
                                 </router-link>
                             </li>
                             <li>
-                                <a href="#">
+                                <router-link to="/admin/orders">
                                     <i class="fa fa-calendar"></i>
-                                    <span class="menu-text">Calendar</span>
-                                </a>
+                                    <span class="menu-text">Orders</span>
+                                </router-link>
                             </li>
                             <li>
-                                <a href="#">
-                                    <i class="fa fa-folder"></i>
-                                    <span class="menu-text">Examples</span>
+                                <a href="#" v-on:click="logout">
+                                    <i class="fa fa-power-off"></i>
+                                    <span class="menu-text">Logout</span>
                                 </a>
                             </li>
                         </ul>
@@ -88,11 +88,21 @@
 </template>
 
 <script>
+import {fb} from '../firebase'
 export default {
     name: 'Admin',
     methods: {
-        closeMenu(){
+        closeMenu() {
             $('.page-wrapper').toggleClass('toggled');
+        },
+        logout() {
+            fb.auth().signOut()
+            .then(() => {
+                this.$router.replace('/')
+            })
+            .catch((err) => {
+                console.log(err)
+            })
         }
     }
 }
